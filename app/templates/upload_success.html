@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSV Uploaded</title>
+</head>
+<body>
+    <h2>CSV Uploaded Successfully!</h2>
+    <p>Detected Columns:</p>
+    <ul>
+        {% for column in columns %}
+            <li>{{ column }}</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+    <h3>Send Emails</h3>
+    <form action="/send_emails" method="post">
+        <input type="hidden" name="file" value="{{ file }}">
+
+        <label for="subject">Email Subject:</label><br>
+        <input type="text" id="subject" name="subject" required><br><br>
+
+        <label for="schedule_time">Schedule Time (optional):</label><br>
+        <input type="datetime-local" id="schedule_time" name="schedule_time"><br><br>
+
+        <label for="prompt">Custom AI Prompt:</label><br>
+        <textarea id="prompt" name="prompt" rows="5" cols="50" required></textarea><br><br>
+
+        <button type="submit">Send/Schedule Emails</button>
+    </form>
+
+    <br>
+    <a href="/upload_csv">Upload Another File</a>
+</body>
+</html>

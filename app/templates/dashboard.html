@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .stats-container { display: flex; justify-content: space-around; margin: 20px; }
+        .stat-box { 
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .email-list {
+            margin: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Email Dashboard</h1>
+    <div class="stats-container">
+        <div class="stat-box" id="sent-count">Sent: 0</div>
+        <div class="stat-box" id="scheduled-count">Scheduled: 0</div>
+        <div class="stat-box" id="failed-count">Failed: 0</div>
+    </div>
+    <div id="status-chart"></div>
+    <div class="email-list">
+        <h2>Recent Emails</h2>
+        <table id="email-table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Timestamp</th>
+                    <th>Scheduled Time</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script>
+        function updateDashboard() {
+            fetch('/api/email-stats')
+                .then(response => response.json())
+                .then(data => {
+                    // Update counts
+                    document.getElementById('sent-count').textContent = `Sent: ${data.counts.sent}`;
+                    document.getElementById('scheduled-count').textContent = `Scheduled: ${data.counts.scheduled}`;
+                    document.getElementById('failed-count').textContent = `Failed: ${data.counts.failed}`;
+                    
+                    const pieData = [{
+                        values: [data.counts.sent, data.counts.scheduled, data.counts.failed],
+                        labels: ['Sent', 'Scheduled', 'Failed'],
+                        type: 'pie'
+                    }];
+                    Plotly.newPlot('status-chart', pieData);
+                    
+                    const tbody = document.querySelector('#email-table tbody');
+                    tbody.innerHTML = '';
+                    Object.entries(data.details).forEach(([email, details]) => {
+                        const row = tbody.insertRow();
+                        row.insertCell().textContent = email;
+                        row.insertCell().textContent = details.status;
+                        row.insertCell().textContent = new Date(details.timestamp).toLocaleString();
+                        row.insertCell().textContent = details.scheduled_time ? 
+                            new Date(details.scheduled_time).toLocaleString() : 'N/A';
+                    });
+                });
+        }
+        
+        updateDashboard();
+        setInterval(updateDashboard, 5000);
+    </script>
+</body>
+</html>

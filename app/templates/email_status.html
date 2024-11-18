@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Status</title>
+</head>
+<body>
+    <h2>Email Sending Results</h2>
+    <table border="1">
+        <tr>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Message</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            <td>{{ result.email }}</td>
+            <td>{{ result.status }}</td>
+            <td>{{ result.message }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="/upload_csv">Back</a>
+</body>
+</html>
